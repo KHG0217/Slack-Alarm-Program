@@ -7,7 +7,9 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -18,10 +20,21 @@ import javax.net.ssl.X509TrustManager;
 
 import com.google.gson.Gson;
 
+/**
+ * 
+ * @author hyukg
+ * @Date 2024-07-23
+ * @see 슬렉 api를 구현하여 원하는 메시지를 슬렉 알람으로 전송한다.
+ * 메시지를 전송할때 webHookUrl이 필요하다.
+ * 	-> slack에 incoming WebHooks app을 사용한다.
+ *
+ */
 public class SlackApi {
-	
-	SSLContext sslContext = null;
-	
+	/**
+	 * 
+	 * @param webHookUrl
+	 * @param text
+	 */
 	public void sendSlackText(String webHookUrl, String text){
 		try {
 			URL url = new URL(webHookUrl);
@@ -80,8 +93,8 @@ public class SlackApi {
 	
 	public static void main(String[] args) {
 		SlackApi pr = new SlackApi();
-		String webHookUrl = "https://hooks.slack.com/services/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";
-		String text = "test";
+		String webHookUrl = "https://hooks.slack.com/services/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";
+		String text = "api 테스트";
 		pr.certifyTLS();
 		pr.sendSlackText(webHookUrl, text);
 	}
