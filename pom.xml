@@ -8,6 +8,17 @@
 
   <name>slack-alarm-program</name>
   <url>http://maven.apache.org</url>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <!-- 스프링부트 프로젝트 버전(3.2.3) -> 3xx버전에서 jdk 17이상을 요구하므로, 2xx버전사용 parent -->
     <parent>
@@ -19,8 +30,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <spring-cloud.version>2021.0.8</spring-cloud.version>
   </properties>
-
 
   <dependencies>
         <dependency>
@@ -37,58 +48,41 @@
             <version>2.10.1</version>
         </dependency>
 
-      <!-- mybatis -->
-      <!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-jdbc</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-configuration-processor</artifactId>
+          <optional>true</optional>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-devtools</artifactId>
+          <optional>true</optional>
+      </dependency>
 
-
-
-
-      <!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc5 -->
-    <!--
+      <!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8 -->
       <dependency>
           <groupId>com.oracle.database.jdbc</groupId>
-          <artifactId>ojdbc5</artifactId>
-          <version>11.2.0.4</version>
+          <artifactId>ojdbc8</artifactId>
+          <version>12.2.0.1</version>
       </dependency>
-      -->
-
-<!--
       <dependency>
-          <groupId>org.mybatis</groupId>
-          <artifactId>mybatis-spring</artifactId>
-          <version>1.2.0</version>
-          <scope>compile</scope>
+          <groupId>org.mybatis.spring.boot</groupId>
+          <artifactId>mybatis-spring-boot-starter</artifactId>
+          <version>2.3.1</version>
       </dependency>
--->
-<!--
-    <dependency>
-        <groupId>org.mybatis.spring.boot</groupId>
-        <artifactId>mybatis-spring-boot-starter</artifactId>
-    </dependency>
-    -->
-      <!-- Spring Boot-->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
+      <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-function-context</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.projectlombok</groupId>
+          <artifactId>lombok</artifactId>
+          <scope>annotationProcessor</scope>
+      </dependency>
   </dependencies>
 
     <build>
