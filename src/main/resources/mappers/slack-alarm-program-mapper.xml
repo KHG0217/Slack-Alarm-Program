@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="work.khg.common.mappers.SlackAlarmProgramMapper">
+    <select id="selectActivatedCrawlSiteList" parameterType="String" resultType="String">
+        SELECT DISTINCT(SITE_SUB_CATE)  FROM TB_CRAWL_SITE
+        WHERE 1=1
+        AND STATUS ='T'
+        AND SITE_TYPE =#{siteType}
+    </select>
+
+    <select id="selectCollectedCrawlsite" parameterType="ArticleSearchDTO" resultType="String">
+        <![CDATA[
+        SELECT DISTINCT(SITE_SUB_TYPE) FROM ${tableName}
+        where 1=1
+        AND CRAWL_DATE >= '${startDate}'
+        AND CRAWL_DATE <= '${endDate}'
+        ]]>
+    </select>
+</mapper>
