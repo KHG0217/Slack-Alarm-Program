@@ -37,6 +37,7 @@ public class SlackApi {
 	 */
 	public void sendSlackText(String webHookUrl, String text){
 		try {
+			certifyTLS();
 			URL url = new URL(webHookUrl);
 			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 	        connection.setRequestMethod("POST");
@@ -89,13 +90,5 @@ public class SlackApi {
 				e2.printStackTrace();
 			}
             return getSSlFactory;
-	}
-	
-	public static void main(String[] args) {
-		SlackApi pr = new SlackApi();
-		String webHookUrl = "https://hooks.slack.com/services/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";
-		String text = "api 테스트";
-		pr.certifyTLS();
-		pr.sendSlackText(webHookUrl, text);
 	}
 }
