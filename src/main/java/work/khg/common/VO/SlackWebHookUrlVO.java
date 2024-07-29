@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Getter
 @Component
 public class SlackWebHookUrlVO {
-    @Value("${alarm.name.community_error.url}")
+    @Value("${slack.name.alarm.url}")
     String alarm;
 }

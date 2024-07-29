@@ -3,7 +3,6 @@ package work.khg.slack_alarm_program;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.JdbcTemplate;
 import work.khg.common.mappers.TestMapper;
 
@@ -15,6 +14,7 @@ public class DBConnectTest {
 
     @Autowired
     public TestMapper testMapper;
+
 
     @Test
     public void jdbcConnectionTest() {
