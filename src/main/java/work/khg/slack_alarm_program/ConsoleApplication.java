@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
@@ -32,40 +33,40 @@ public class ConsoleApplication {
 
 
     public static void main(String[] args) {
-        if(args.length != 1) {
+        if (args.length != 1) {
             System.out.println("Usage:<runMode>");
             System.exit(-1);
         }
-        SpringApplication.run(ConsoleApplication.class, args);
+        ApplicationContext context = SpringApplication.run(ConsoleApplication.class, args);
+        ConsoleApplication pr = context.getBean(ConsoleApplication.class);
+
+        int runMode = Integer.parseInt(args[0]);
+        pr.handleModeSelection(runMode);
     }
 
-    @Bean
-    public CommandLineRunner demo() {
-        return (args) -> {
-            System.out.println("test: " + args[0]);
-            int runMode = Integer.parseInt(args[0]);
+    public void handleModeSelection(int runMode) {
+        switch (runMode) {
+            case 1:
+                sendCollectionStatusToSlack();
+                break;
 
-            switch (runMode) {
-                case 1:
-                    sendCollectionStatusToSlack();
-                    break;
+            case 2:
+                checkTwitterAuth();
+                break;
 
-                case 2:
-                    System.out.println("Check number of unusable Twitter account- 미구현");
-                    break;
+            default:
+                System.out.println("Invalid runMode, runMode input 1 or 2, System exist.");
+                System.exit(-1);
 
-                default:
-                    System.out.println("Invalid runMode, runMode input 1 or 2, System exist.");
-                    System.exit(-1);
+        }
 
-            }
-       } ;
     }
 
     public void sendCollectionStatusToSlack() {
         System.out.println("input siteType: C(Community) or M(Media)");
         Scanner scanner = new Scanner(System.in);
         String siteType = scanner.nextLine();
+
         if(!(siteType.equals("C") || siteType.equals("M"))) {
             System.out.println("Site type input error, try again");
             sendCollectionStatusToSlack();
@@ -89,6 +90,9 @@ public class ConsoleApplication {
         String webHookUrl = slackWebHookUrlVO.getAlarm();
         String text = String.format("[siteType: %s, date: %s ~ %s] \n %s", siteType, startDate, endDate, check.toString());
         slackApi.sendSlackText(webHookUrl, text);
+    }
+
+    public void checkTwitterAuth() {
     }
 //    public CommandLineRunner demo(MyService myService) {
 //        return (args) -> {

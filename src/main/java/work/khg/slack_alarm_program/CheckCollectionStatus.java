@@ -63,7 +63,10 @@ public class CheckCollectionStatus {
             articleSearchDTOPre.setEndDate(endDate);
             List<String> collectedCrawlSitePreList = slackAlarmProgramMapper.selectCollectedCrawlsite(articleSearchDTOPre);
 
-            collectedCrawlSiteList = slackAlarmProgramMapper.selectCollectedCrawlsite(articleSearchDTOPre);
+            tabelName = TABLE_NAME_PREFIX + tableSiteType + endingTableName;
+            articleSearchDTO.setTableName(tabelName);
+
+            collectedCrawlSiteList = slackAlarmProgramMapper.selectCollectedCrawlsite(articleSearchDTO);
 
             // Set을 사용하여 중복 제거
             Set<String> set = new HashSet<>(collectedCrawlSitePreList);
