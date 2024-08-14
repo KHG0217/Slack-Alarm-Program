@@ -3,6 +3,7 @@ package work.khg.common.mappers;
 import org.apache.ibatis.annotations.Mapper;
 import work.khg.common.DTO.ArticleSearchDTO;
 import work.khg.common.DTO.CrawlSiteDTO;
+import work.khg.common.DTO.TwitterAuthDTO;
 
 import java.util.List;
 
@@ -10,4 +11,5 @@ import java.util.List;
 public interface SlackAlarmProgramMapper {
     List<String> selectActivatedCrawlSiteList(String siteType);
     List<String> selectCollectedCrawlsite(ArticleSearchDTO articleSearchDTOeDto);
+    List<TwitterAuthDTO> selectStatusFTwitterId();
 }

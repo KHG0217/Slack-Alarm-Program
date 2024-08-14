@@ -42,4 +42,9 @@ public class MapperTest {
        List<String> list =  slackAlarmProgramMapper.selectCollectedCrawlsite(articleSearchDTO);
        Assert.assertEquals(!list.isEmpty(), true);
     }
+
+    @Test
+    public void testSelectStatusFTwitterId() {
+        System.out.println(slackAlarmProgramMapper.selectStatusFTwitterId().size());
+    }
 }

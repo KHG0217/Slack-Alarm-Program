@@ -31,6 +31,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <spring-cloud.version>2021.0.8</spring-cloud.version>
+      <maven.test.skip>true</maven.test.skip>
   </properties>
 
   <dependencies>
@@ -96,7 +97,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>work.khg.slack_alarm_program.SlackApi</mainClass>
+                    <mainClass>work.khg.slack_alarm_program.ConsoleApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

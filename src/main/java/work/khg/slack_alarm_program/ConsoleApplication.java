@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import work.khg.common.DTO.CrawlSiteDTO;
+import work.khg.common.DTO.TwitterAuthDTO;
 import work.khg.common.VO.SlackWebHookUrlVO;
 
 import java.util.List;
@@ -30,6 +31,9 @@ public class ConsoleApplication {
 
     @Autowired
     CheckCollectionStatus checkCollectionStatus;
+
+    @Autowired
+    CheckTwitterAuth CheckTwitterAuth;
 
 
     public static void main(String[] args) {
@@ -51,7 +55,7 @@ public class ConsoleApplication {
                 break;
 
             case 2:
-                checkTwitterAuth();
+                sendTwitterStatusToSlack();
                 break;
 
             default:
@@ -92,7 +96,18 @@ public class ConsoleApplication {
         slackApi.sendSlackText(webHookUrl, text);
     }
 
-    public void checkTwitterAuth() {
+    public void sendTwitterStatusToSlack() {
+        List<TwitterAuthDTO> twitterErrorAuthList = CheckTwitterAuth.returnTwitterAuthStatusF();
+        System.out.println(twitterErrorAuthList.size());
+
+        if(twitterErrorAuthList.size() >= 20) {
+            String text = String.format("[TwitterAuthStatusF size: %s개, 확인필요]", twitterErrorAuthList.size());
+            System.out.println(text);
+
+            SlackApi slackApi = new SlackApi();
+            String webHookUrl = slackWebHookUrlVO.getAlarm();
+            slackApi.sendSlackText(webHookUrl, text);
+        }
     }
 //    public CommandLineRunner demo(MyService myService) {
 //        return (args) -> {

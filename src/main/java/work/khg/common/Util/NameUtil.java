@@ -43,9 +43,4 @@ public class NameUtil {
         }
         return convertedDateName;
     }
-
-    public static void main(String[] args) {
-        System.out.println(convertSiteTypeToTableSiteType("M"));
-        System.out.println("20240718".substring(2,6));
-    }
 }

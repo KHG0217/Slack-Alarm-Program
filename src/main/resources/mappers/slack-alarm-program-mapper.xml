@@ -17,4 +17,10 @@
         AND CRAWL_DATE <= '${endDate}'
         ]]>
     </select>
+
+    <select id="selectStatusFTwitterId" resultType="TwitterAuthDTO">
+        SELECT EMAIL, USER_ID as userId , USER_PASSWORD as userPassword FROM TB_TWITTER_AUTH_TOKEN
+        WHERE 1=1
+        AND STATUS = 'F'
+    </select>
 </mapper>
