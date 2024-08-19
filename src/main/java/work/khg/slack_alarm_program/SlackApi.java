@@ -37,7 +37,6 @@ public class SlackApi {
 	 */
 	public void sendSlackText(String webHookUrl, String text){
 		try {
-			certifyTLS();
 			URL url = new URL(webHookUrl);
 			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 	        connection.setRequestMethod("POST");
@@ -49,13 +48,17 @@ public class SlackApi {
 	        
             Gson gson = new Gson();
             String jsonString = gson.toJson(body);
-            
-            OutputStream os = connection.getOutputStream();
-            os.write(jsonString.getBytes(StandardCharsets.UTF_8));
-            os.flush();
-            os.close();
 
-            connection.getResponseCode();
+			try (OutputStream os = connection.getOutputStream()) { //try-with-resources - AutoColseable || Closerable
+				os.write(jsonString.getBytes(StandardCharsets.UTF_8));
+				os.flush();
+			}
+
+			int responseCode = connection.getResponseCode();
+			if (responseCode != HttpsURLConnection.HTTP_OK) {
+				throw new RuntimeException("Failed : HTTP error code : " + responseCode);
+			}
+
             connection.disconnect();
 		}catch (Exception e) {
 			// TODO: handle exception

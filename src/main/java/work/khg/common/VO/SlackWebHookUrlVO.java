@@ -9,4 +9,7 @@ import org.springframework.stereotype.Component;
 public class SlackWebHookUrlVO {
     @Value("${slack.name.alarm.url}")
     String alarm;
+
+    @Value("${slack.name.crawl.url}")
+    String crawl;
 }

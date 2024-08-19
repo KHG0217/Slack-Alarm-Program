@@ -21,10 +21,12 @@ import java.util.Set;
  */
 @Component
 public class CheckCollectionStatus {
-    private final String TABLE_NAME_PREFIX = "TB_ARTICLE_SEARCH_";
+    private final SlackAlarmProgramMapper slackAlarmProgramMapper;
 
     @Autowired
-    private SlackAlarmProgramMapper slackAlarmProgramMapper;
+    public CheckCollectionStatus(SlackAlarmProgramMapper slackAlarmProgramMapper) {
+        this.slackAlarmProgramMapper = slackAlarmProgramMapper;
+    }
 
     /**
      *  siteType을 인자로 받아, 활성화 되어있는 수집원들을 리스트로 반환한다.
@@ -32,65 +34,53 @@ public class CheckCollectionStatus {
      * @return activatedCrawlSiteList
      */
     public List<String> returnActivatedCrawlSite(String siteType) {
-        List<String> activatedCrawlSiteList = new ArrayList<String>();
-        activatedCrawlSiteList = slackAlarmProgramMapper.selectActivatedCrawlSiteList(siteType);
-        return activatedCrawlSiteList;
+        return slackAlarmProgramMapper.selectActivatedCrawlSiteList(siteType);
     }
 
     public List<String> returnCollectedCrawlsite(String siteType, String startDate, String endDate) {
-
         List<String> collectedCrawlSiteList = new ArrayList<String>();
+        try{
+            String tableSiteType = NameUtil.convertSiteTypeToTableSiteType(siteType);
+            String startingTableName = startDate.substring(2,6);
+            String endingTableName = endDate.substring(2,6);
 
-        String tableSiteType = NameUtil.convertSiteTypeToTableSiteType(siteType);
-        String startingTableName = startDate.substring(2,6);
-        String endingTableName = endDate.substring(2,6);
+            ArticleSearchDTO articleSearchDTO = new ArticleSearchDTO();
+            articleSearchDTO.setSiteType(siteType);
+            articleSearchDTO.setStartDate(startDate);
+            articleSearchDTO.setEndDate(endDate);
 
-        String tabelName = TABLE_NAME_PREFIX + tableSiteType + startingTableName;
-        ArticleSearchDTO articleSearchDTO = new ArticleSearchDTO();
-        articleSearchDTO.setTableName(tabelName);
-        articleSearchDTO.setSiteType(siteType);
-        articleSearchDTO.setStartDate(startDate);
-        articleSearchDTO.setEndDate(endDate);
+            String TABLE_NAME_PREFIX = "TB_ARTICLE_SEARCH_";
+            if(startingTableName.equals(endingTableName)) {
+                String tableName = TABLE_NAME_PREFIX + tableSiteType + startingTableName;
+                articleSearchDTO.setTableName(tableName);
+                collectedCrawlSiteList = slackAlarmProgramMapper.selectCollectedCrawlsite(articleSearchDTO);
+            }else {
+                String tableNamePre = TABLE_NAME_PREFIX + tableSiteType + startingTableName;
+                articleSearchDTO.setTableName(tableNamePre);
 
-        if(startingTableName.equals(endingTableName)) {
-            collectedCrawlSiteList = slackAlarmProgramMapper.selectCollectedCrawlsite(articleSearchDTO);
-        }else {
-            String tabelNamePre = TABLE_NAME_PREFIX + tableSiteType + startingTableName;
-            ArticleSearchDTO articleSearchDTOPre = new ArticleSearchDTO();
-            articleSearchDTOPre.setTableName(tabelNamePre);
-            articleSearchDTOPre.setSiteType(siteType);
-            articleSearchDTOPre.setStartDate(startDate);
-            articleSearchDTOPre.setEndDate(endDate);
-            List<String> collectedCrawlSitePreList = slackAlarmProgramMapper.selectCollectedCrawlsite(articleSearchDTOPre);
+                List<String> collectedCrawlSitePreList = slackAlarmProgramMapper.selectCollectedCrawlsite(articleSearchDTO);
+                String tableNamePost = TABLE_NAME_PREFIX + tableSiteType + endingTableName;
+                articleSearchDTO.setTableName(tableNamePost);
 
-            tabelName = TABLE_NAME_PREFIX + tableSiteType + endingTableName;
-            articleSearchDTO.setTableName(tabelName);
+                collectedCrawlSiteList = slackAlarmProgramMapper.selectCollectedCrawlsite(articleSearchDTO);
 
-            collectedCrawlSiteList = slackAlarmProgramMapper.selectCollectedCrawlsite(articleSearchDTO);
-
-            // Set을 사용하여 중복 제거
-            Set<String> set = new HashSet<>(collectedCrawlSitePreList);
-            set.addAll(collectedCrawlSiteList);
-
-            collectedCrawlSiteList = new ArrayList<>(set);
-
+                // Set을 사용하여 중복 제거
+                Set<String> set = new HashSet<>(collectedCrawlSitePreList);
+                set.addAll(collectedCrawlSiteList);
+                collectedCrawlSiteList = new ArrayList<>(set);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
         }
-
         return collectedCrawlSiteList;
     }
 
-    public  Set<String> CheckCommunityCollection(List<String> activatedCrawlSiteList,
+    public  Set<String> findUncollectedSites(List<String> activatedCrawlSiteList,
                                          List<String> collectedCrawlSiteList) {
-        Set<String> activatedCrawlSiteSet = new HashSet<String>(activatedCrawlSiteList);
-        Set<String> collectedCrawlSiteSet = new HashSet<String>(collectedCrawlSiteList);
-        Set<String> CheckCommunitySiteSet = new HashSet<String>();
-
-        for(String activatedCrawlSite : activatedCrawlSiteList) {
-            if (!collectedCrawlSiteSet.contains(activatedCrawlSite)) {
-                CheckCommunitySiteSet.add(activatedCrawlSite);
-            }
-        }
-        return CheckCommunitySiteSet;
+        Set<String> activatedCrawlSiteSet = new HashSet<>(activatedCrawlSiteList);
+        Set<String> collectedCrawlSiteSet = new HashSet<>(collectedCrawlSiteList);
+        activatedCrawlSiteSet.removeAll(collectedCrawlSiteSet);
+        return activatedCrawlSiteSet;
     }
 
 

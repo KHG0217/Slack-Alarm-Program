@@ -41,7 +41,7 @@ public class AppTest {
         List<String> collectedCrawlSiteList = checkCollectionStatus.returnCollectedCrawlsite(siteType, startDate, endDate);
         System.out.println("collectedCrawlSiteList: " + collectedCrawlSiteList.toString());
 
-        Set<String> check = checkCollectionStatus.CheckCommunityCollection(activatedCrawlSiteList, collectedCrawlSiteList);
+        Set<String> check = checkCollectionStatus.findUncollectedSites(activatedCrawlSiteList, collectedCrawlSiteList);
         System.out.println("check: " + check.toString());
 
     }

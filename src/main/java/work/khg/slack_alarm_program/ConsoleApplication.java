@@ -2,16 +2,12 @@ package work.khg.slack_alarm_program;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
-import work.khg.common.DTO.CrawlSiteDTO;
 import work.khg.common.DTO.TwitterAuthDTO;
+import work.khg.common.Util.DateInputValidUtil;
 import work.khg.common.VO.SlackWebHookUrlVO;
 
 import java.util.List;
@@ -22,18 +18,19 @@ import java.util.Set;
 @ComponentScan(basePackages = "work.khg")
 @MapperScan("work.khg.common.mappers")
 public class ConsoleApplication {
+    private static final int TWITTER_AUTH_ERROR_THRESHOLD = 20;
+
+    private final SlackWebHookUrlVO slackWebHookUrlVO;
+    private final CheckCollectionStatus checkCollectionStatus;
+    private final CheckTwitterAuth checkTwitterAuth;
 
     @Autowired
-    private Environment environment;
-
-    @Autowired
-    private SlackWebHookUrlVO slackWebHookUrlVO;
-
-    @Autowired
-    CheckCollectionStatus checkCollectionStatus;
-
-    @Autowired
-    CheckTwitterAuth CheckTwitterAuth;
+    public ConsoleApplication(SlackWebHookUrlVO slackWebHookUrlVO,
+                              CheckCollectionStatus checkCollectionStatus, CheckTwitterAuth checkTwitterAuth) {
+        this.slackWebHookUrlVO = slackWebHookUrlVO;
+        this.checkCollectionStatus = checkCollectionStatus;
+        this.checkTwitterAuth = checkTwitterAuth;
+    }
 
 
     public static void main(String[] args) {
@@ -67,56 +64,49 @@ public class ConsoleApplication {
     }
 
     public void sendCollectionStatusToSlack() {
-        System.out.println("input siteType: C(Community) or M(Media)");
-        Scanner scanner = new Scanner(System.in);
-        String siteType = scanner.nextLine();
+        try{
+            Scanner scanner = new Scanner(System.in);
+            String siteType;
+            do {
+                System.out.println("input siteType: C(Community) or M(Media)");
+                siteType = scanner.nextLine();
+                if(!(siteType.equals("C") || siteType.equals("M"))) {
+                    System.out.println("Site type input error, try again");
+                }
+            } while (!(siteType.equals("C") || siteType.equals("M")));
 
-        if(!(siteType.equals("C") || siteType.equals("M"))) {
-            System.out.println("Site type input error, try again");
-            sendCollectionStatusToSlack();
+            DateInputValidUtil  dateInputValidUtil = new DateInputValidUtil();
+            String DatePattern = "yyyyMMdd";
+            String startDate = dateInputValidUtil.getDateFromUser
+                    ("input startDate: yyyyMMdd", scanner, DatePattern);
+            String endDate = dateInputValidUtil.getDateFromUser
+                    ("input endDate: yyyyMMdd", scanner, DatePattern);
+
+            List<String> activatedCrawlSiteList = this.checkCollectionStatus.returnActivatedCrawlSite(siteType);
+            System.out.println("activatedCrawlSiteList: " + activatedCrawlSiteList.toString());
+
+            List<String> collectedCrawlSiteList = this.checkCollectionStatus.returnCollectedCrawlsite(siteType, startDate, endDate);
+            Set<String> check = this.checkCollectionStatus.findUncollectedSites(activatedCrawlSiteList, collectedCrawlSiteList);
+
+            SlackApi slackApi = new SlackApi();
+            String webHookUrl = this.slackWebHookUrlVO.getAlarm();
+            String text = String.format("[siteType: %s, date: %s ~ %s] \n %s", siteType, startDate, endDate, check.toString());
+            slackApi.sendSlackText(webHookUrl, text);
+        }catch (Exception e) {
+            e.printStackTrace();
         }
 
-        System.out.println("input startDate: yyyyMMdd");
-        scanner = new Scanner(System.in);
-        String startDate = scanner.nextLine();
-
-        System.out.println("input endDate: yyyyMMdd");
-        scanner = new Scanner(System.in);
-        String endDate = scanner.nextLine();
-        List<String> activatedCrawlSiteList = checkCollectionStatus.returnActivatedCrawlSite(siteType);
-        System.out.println("activatedCrawlSiteList: " + activatedCrawlSiteList.toString());
-
-        List<String> collectedCrawlSiteList = checkCollectionStatus.returnCollectedCrawlsite(siteType, startDate, endDate);
-
-        Set<String> check = checkCollectionStatus.CheckCommunityCollection(activatedCrawlSiteList, collectedCrawlSiteList);
-
-        SlackApi slackApi = new SlackApi();
-        String webHookUrl = slackWebHookUrlVO.getAlarm();
-        String text = String.format("[siteType: %s, date: %s ~ %s] \n %s", siteType, startDate, endDate, check.toString());
-        slackApi.sendSlackText(webHookUrl, text);
     }
 
     public void sendTwitterStatusToSlack() {
-        List<TwitterAuthDTO> twitterErrorAuthList = CheckTwitterAuth.returnTwitterAuthStatusF();
+        List<TwitterAuthDTO> twitterErrorAuthList = this.checkTwitterAuth.returnTwitterAuthStatusF();
         System.out.println(twitterErrorAuthList.size());
 
-        if(twitterErrorAuthList.size() >= 20) {
+        if(twitterErrorAuthList.size() >= TWITTER_AUTH_ERROR_THRESHOLD) {
             String text = String.format("[TwitterAuthStatusF size: %s개, 확인필요]", twitterErrorAuthList.size());
-            System.out.println(text);
-
             SlackApi slackApi = new SlackApi();
-            String webHookUrl = slackWebHookUrlVO.getAlarm();
+            String webHookUrl = this.slackWebHookUrlVO.getCrawl();
             slackApi.sendSlackText(webHookUrl, text);
         }
     }
-//    public CommandLineRunner demo(MyService myService) {
-//        return (args) -> {
-//           myService.performDataBaseOperations();
-//        } ;
-//    }
-
-//    @Override
-//    public void run(String... args) throws Exception {
-////        myService.performDataBaseOperations();
-//    }
 }
