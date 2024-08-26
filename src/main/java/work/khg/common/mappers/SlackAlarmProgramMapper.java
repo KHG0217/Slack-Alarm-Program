@@ -12,4 +12,6 @@ public interface SlackAlarmProgramMapper {
     List<String> selectActivatedCrawlSiteList(String siteType);
     List<String> selectCollectedCrawlsite(ArticleSearchDTO articleSearchDTOeDto);
     List<TwitterAuthDTO> selectStatusFTwitterId();
+    List<String> selectActivatedBoardList(String siteType);
+    List<String> selectCollectedBoard(ArticleSearchDTO articleSearchDTOeDto);
 }

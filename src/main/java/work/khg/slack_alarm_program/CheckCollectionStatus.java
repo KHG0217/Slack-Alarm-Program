@@ -30,6 +30,7 @@ public class CheckCollectionStatus {
 
     /**
      *  siteType을 인자로 받아, 활성화 되어있는 수집원들을 리스트로 반환한다.
+     *  단위: 수집원단위
      * @param siteType
      * @return activatedCrawlSiteList
      */
@@ -74,13 +75,60 @@ public class CheckCollectionStatus {
         }
         return collectedCrawlSiteList;
     }
+    /**
+     *  siteType을 인자로 받아, 활성화 되어있는 게시판들을 리스트로 반환한다.
+     *  단위: 게시판단위
+     * @param siteType
+     * @return activatedCrawlSiteList
+     */
+    public List<String> returnActivatedBoard(String siteType) {
+        return slackAlarmProgramMapper.selectActivatedBoardList(siteType);
+    }
 
-    public  Set<String> findUncollectedSites(List<String> activatedCrawlSiteList,
-                                         List<String> collectedCrawlSiteList) {
-        Set<String> activatedCrawlSiteSet = new HashSet<>(activatedCrawlSiteList);
-        Set<String> collectedCrawlSiteSet = new HashSet<>(collectedCrawlSiteList);
-        activatedCrawlSiteSet.removeAll(collectedCrawlSiteSet);
-        return activatedCrawlSiteSet;
+    public List<String> returnCollectedBoard(String siteType, String startDate, String endDate) {
+        List<String> collectedBoardList = new ArrayList<String>();
+        try{
+            String tableSiteType = NameUtil.convertSiteTypeToTableSiteType(siteType);
+            String startingTableName = startDate.substring(2,6);
+            String endingTableName = endDate.substring(2,6);
+
+            ArticleSearchDTO articleSearchDTO = new ArticleSearchDTO();
+            articleSearchDTO.setSiteType(siteType);
+            articleSearchDTO.setStartDate(startDate);
+            articleSearchDTO.setEndDate(endDate);
+
+            String TABLE_NAME_PREFIX = "TB_ARTICLE_SEARCH_";
+            if(startingTableName.equals(endingTableName)) {
+                String tableName = TABLE_NAME_PREFIX + tableSiteType + startingTableName;
+                articleSearchDTO.setTableName(tableName);
+                collectedBoardList = slackAlarmProgramMapper.selectCollectedBoard(articleSearchDTO);
+            }else {
+                String tableNamePre = TABLE_NAME_PREFIX + tableSiteType + startingTableName;
+                articleSearchDTO.setTableName(tableNamePre);
+
+                List<String> collectedBoardSitePreList = slackAlarmProgramMapper.selectCollectedBoard(articleSearchDTO);
+                String tableNamePost = TABLE_NAME_PREFIX + tableSiteType + endingTableName;
+                articleSearchDTO.setTableName(tableNamePost);
+
+                collectedBoardList = slackAlarmProgramMapper.selectCollectedBoard(articleSearchDTO);
+
+                // Set을 사용하여 중복 제거
+                Set<String> set = new HashSet<>(collectedBoardSitePreList);
+                set.addAll(collectedBoardList);
+                collectedBoardList = new ArrayList<>(set);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return collectedBoardList;
+    }
+
+    public  Set<String> findUncollectedSites(List<String> activatedList,
+                                         List<String> collectedList) {
+        Set<String> activatedSet = new HashSet<>(activatedList);
+        Set<String> collectedSet = new HashSet<>(collectedList);
+        activatedSet.removeAll(collectedSet);
+        return activatedSet;
     }
 
 

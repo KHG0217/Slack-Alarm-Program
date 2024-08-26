@@ -18,6 +18,26 @@
         ]]>
     </select>
 
+    <select id="selectActivatedBoardList" parameterType="String" resultType="String">
+        SELECT DISTINCT(SITE_NAME)  FROM TB_CRAWL_SITE
+        WHERE 1=1
+          AND SITE_SUB_CATE !='네이버'
+          AND SITE_SUB_CATE !='다음'
+          AND STATUS ='T'
+          AND SITE_TYPE =#{siteType}
+    </select>
+
+    <select id="selectCollectedBoard" parameterType="ArticleSearchDTO" resultType="String">
+        <![CDATA[
+        SELECT DISTINCT(SITE_NAME) FROM ${tableName}
+        where 1=1
+          AND CRAWL_DATE >= '${startDate}'
+          AND CRAWL_DATE <= '${endDate}'
+          AND SITE_SUB_TYPE !='다음'
+          AND SITE_SUB_TYPE !='네이버'
+        ]]>
+    </select>
+
     <select id="selectStatusFTwitterId" resultType="TwitterAuthDTO">
         SELECT EMAIL, USER_ID as userId , USER_PASSWORD as userPassword FROM TB_TWITTER_AUTH_TOKEN
         WHERE 1=1

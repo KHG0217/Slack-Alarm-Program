@@ -32,7 +32,6 @@ public class ConsoleApplication {
         this.checkTwitterAuth = checkTwitterAuth;
     }
 
-
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage:<runMode>");
@@ -82,15 +81,30 @@ public class ConsoleApplication {
             String endDate = dateInputValidUtil.getDateFromUser
                     ("input endDate: yyyyMMdd", scanner, DatePattern);
 
+            // 수집원 단위
             List<String> activatedCrawlSiteList = this.checkCollectionStatus.returnActivatedCrawlSite(siteType);
             System.out.println("activatedCrawlSiteList: " + activatedCrawlSiteList.toString());
 
             List<String> collectedCrawlSiteList = this.checkCollectionStatus.returnCollectedCrawlsite(siteType, startDate, endDate);
             Set<String> check = this.checkCollectionStatus.findUncollectedSites(activatedCrawlSiteList, collectedCrawlSiteList);
-
             SlackApi slackApi = new SlackApi();
             String webHookUrl = this.slackWebHookUrlVO.getAlarm();
-            String text = String.format("[siteType: %s, date: %s ~ %s] \n %s", siteType, startDate, endDate, check.toString());
+            String text = String.format("[siteType: %s, date: %s ~ %s, 수집원단위] \n %s", siteType, startDate, endDate, check.toString());
+            slackApi.sendSlackText(webHookUrl, text);
+
+            // 게시판 단위
+            List<String> activatedBoardSiteList = this.checkCollectionStatus.returnActivatedBoard(siteType);
+            System.out.println("activatedBoardSiteList: " + activatedBoardSiteList.toString());
+
+            List<String> collectedList = this.checkCollectionStatus.returnCollectedBoard(siteType, startDate, endDate);
+            check = this.checkCollectionStatus.findUncollectedSites(activatedBoardSiteList, collectedList);
+
+            StringBuffer stringBuffer = new StringBuffer();
+            for (String site : check) {
+                stringBuffer.append(site)
+                        .append("\n");
+            }
+            text = String.format("[siteType: %s, date: %s ~ %s, 게시판단위] \n %s", siteType, startDate, endDate, stringBuffer.toString());
             slackApi.sendSlackText(webHookUrl, text);
         }catch (Exception e) {
             e.printStackTrace();

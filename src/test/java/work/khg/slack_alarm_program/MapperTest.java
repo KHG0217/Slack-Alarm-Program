@@ -44,7 +44,38 @@ public class MapperTest {
     }
 
     @Test
+    public void selectActivatedBoardList() {
+        String siteType = "C";
+        List<String> list = slackAlarmProgramMapper.selectActivatedBoardList(siteType);
+        System.out.println(list.size());
+        System.out.println(list.get(0));
+        Assert.assertEquals(!list.isEmpty(), true);
+    }
+
+    @Test
+    public void selectCollectedBoard() {
+        String tableNamePreFix = "TB_ARTICLE_SEARCH_";
+        String siteType = "MEDIA_";
+        String yyMMDate = "2407";
+
+        String tableName = tableNamePreFix + siteType + yyMMDate;
+        String startDate = "20240718";
+        String endDate = "20240725";
+
+        ArticleSearchDTO articleSearchDTO = new ArticleSearchDTO();
+        articleSearchDTO.setTableName(tableName);
+        articleSearchDTO.setStartDate(startDate);
+        articleSearchDTO.setEndDate(endDate);
+
+        List<String> list =  slackAlarmProgramMapper.selectCollectedBoard(articleSearchDTO);
+        System.out.println(list.size());
+        System.out.println(list.get(0));
+        Assert.assertEquals(!list.isEmpty(), true);
+    }
+
+    @Test
     public void testSelectStatusFTwitterId() {
         System.out.println(slackAlarmProgramMapper.selectStatusFTwitterId().size());
     }
+
 }
