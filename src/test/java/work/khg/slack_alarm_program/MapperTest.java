@@ -45,7 +45,7 @@ public class MapperTest {
 
     @Test
     public void selectActivatedBoardList() {
-        String siteType = "C";
+        String siteType = "M";
         List<String> list = slackAlarmProgramMapper.selectActivatedBoardList(siteType);
         System.out.println(list.size());
         System.out.println(list.get(0));
@@ -55,10 +55,11 @@ public class MapperTest {
     @Test
     public void selectCollectedBoard() {
         String tableNamePreFix = "TB_ARTICLE_SEARCH_";
-        String siteType = "MEDIA_";
+        String tableNameSiteType = "COMM_";
         String yyMMDate = "2407";
+        String siteType = "C";
 
-        String tableName = tableNamePreFix + siteType + yyMMDate;
+        String tableName = tableNamePreFix + tableNameSiteType + yyMMDate;
         String startDate = "20240718";
         String endDate = "20240725";
 
@@ -66,6 +67,7 @@ public class MapperTest {
         articleSearchDTO.setTableName(tableName);
         articleSearchDTO.setStartDate(startDate);
         articleSearchDTO.setEndDate(endDate);
+        articleSearchDTO.setSiteType(siteType);
 
         List<String> list =  slackAlarmProgramMapper.selectCollectedBoard(articleSearchDTO);
         System.out.println(list.size());

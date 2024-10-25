@@ -1,8 +1,10 @@
 package work.khg.common.DTO;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ArticleSearchDTO {
     private Long seq;
     private Long articleId;
@@ -29,6 +31,7 @@ public class ArticleSearchDTO {
     private String siteSubType;
     private String contentId;
     private String address2;
+    @EqualsAndHashCode.Include
     private String siteId;
     private String siteCode;
     private String writerName;

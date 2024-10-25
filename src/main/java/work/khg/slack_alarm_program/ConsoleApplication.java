@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import work.khg.common.DTO.ArticleSearchDTO;
 import work.khg.common.DTO.TwitterAuthDTO;
 import work.khg.common.Util.DateInputValidUtil;
 import work.khg.common.VO.SlackWebHookUrlVO;
@@ -94,7 +95,7 @@ public class ConsoleApplication {
 
             // 게시판 단위
             List<String> activatedBoardSiteList = this.checkCollectionStatus.returnActivatedBoard(siteType);
-            System.out.println("activatedBoardSiteList: " + activatedBoardSiteList.toString());
+            System.out.println("activatedBoardSiteList: " + activatedBoardSiteList);
 
             List<String> collectedList = this.checkCollectionStatus.returnCollectedBoard(siteType, startDate, endDate);
             check = this.checkCollectionStatus.findUncollectedSites(activatedBoardSiteList, collectedList);

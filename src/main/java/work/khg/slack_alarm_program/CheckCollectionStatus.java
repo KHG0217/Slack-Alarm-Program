@@ -77,6 +77,7 @@ public class CheckCollectionStatus {
     }
     /**
      *  siteType을 인자로 받아, 활성화 되어있는 게시판들을 리스트로 반환한다.
+     *  커뮤니티는 네이버와 다음에서 수집된 게시물은 제외한다.
      *  단위: 게시판단위
      * @param siteType
      * @return activatedCrawlSiteList
@@ -130,6 +131,5 @@ public class CheckCollectionStatus {
         activatedSet.removeAll(collectedSet);
         return activatedSet;
     }
-
 
 }

@@ -5,7 +5,10 @@ import junit.framework.TestSuite;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import work.khg.common.DTO.ArticleSearchDTO;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +34,7 @@ public class AppTest {
     }
 
     @Test
-    public void testCheckCommunityCollection() {
+    public void testCheckCommunityCollectionBySite() {
         String siteType = "C";
         List<String> activatedCrawlSiteList = checkCollectionStatus.returnActivatedCrawlSite(siteType);
         System.out.println("activatedCrawlSiteList: " + activatedCrawlSiteList.toString());

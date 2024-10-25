@@ -19,23 +19,32 @@
     </select>
 
     <select id="selectActivatedBoardList" parameterType="String" resultType="String">
-        SELECT DISTINCT(SITE_NAME)  FROM TB_CRAWL_SITE
+        SELECT /*+ INDEX(TB_CRAWL_SITE IDX_CRAWL_SITE_010) */ DISTINCT(SITE_ID)  FROM TB_CRAWL_SITE
         WHERE 1=1
-          AND SITE_SUB_CATE !='네이버'
-          AND SITE_SUB_CATE !='다음'
-          AND STATUS ='T'
-          AND SITE_TYPE =#{siteType}
+        AND STATUS ='T'
+        AND SITE_TYPE =#{siteType}
+        <choose>
+            <when test='siteType == "C"'>
+                AND SITE_SUB_CATE !='네이버'
+                AND SITE_SUB_CATE !='다음'
+            </when>
+        </choose>
+
     </select>
 
     <select id="selectCollectedBoard" parameterType="ArticleSearchDTO" resultType="String">
         <![CDATA[
-        SELECT DISTINCT(SITE_NAME) FROM ${tableName}
+        SELECT DISTINCT(SITE_ID) FROM ${tableName}
         where 1=1
           AND CRAWL_DATE >= '${startDate}'
           AND CRAWL_DATE <= '${endDate}'
-          AND SITE_SUB_TYPE !='다음'
-          AND SITE_SUB_TYPE !='네이버'
         ]]>
+        <choose>
+            <when test='siteType == "C"'>
+                AND SITE_SUB_TYPE !='네이버'
+                AND SITE_SUB_TYPE !='다음'
+            </when>
+        </choose>
     </select>
 
     <select id="selectStatusFTwitterId" resultType="TwitterAuthDTO">
