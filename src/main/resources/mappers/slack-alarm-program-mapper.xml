@@ -64,7 +64,6 @@
         FROM TB_TWITTER_AUTH_TOKEN
         WHERE ip = #{ip}
         AND STATUS = 'T'
-        AND TO_DATE(USE_DATE, 'YYYY-MM-DD HH24:MI:SS') &lt; SYSDATE
+        AND USE_DATE &lt; SYSDATE
     </select>
-
 </mapper>
