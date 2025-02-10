@@ -80,4 +80,23 @@ public class MapperTest {
         System.out.println(slackAlarmProgramMapper.selectStatusFTwitterId().size());
     }
 
+    @Test
+    public void testSelectIpList() {
+        List<String> ipList = slackAlarmProgramMapper.selectIpList();
+        System.out.println(ipList.size());
+//        String localIp = "175.125.218.16";
+//        ipList.remove(localIp);
+        System.out.println(ipList.size());
+        for (String ip : ipList) {
+            System.out.println(ip);
+        }
+    }
+
+    @Test
+    public void testSelectAvailableAuth() {
+        String ip ="220.230.118.176";
+        int count = slackAlarmProgramMapper.selectAvailableAuth(ip);
+        System.out.println(count);
+    }
+
 }
