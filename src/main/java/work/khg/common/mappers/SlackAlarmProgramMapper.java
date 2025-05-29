@@ -15,4 +15,5 @@ public interface SlackAlarmProgramMapper {
     List<String> selectCollectedBoard(ArticleSearchDTO articleSearchDTO);
     List<String> selectIpList();
     int selectAvailableAuth(String ip);
+    int selectAvailableToken(String ip);
 }

@@ -94,9 +94,15 @@ public class MapperTest {
 
     @Test
     public void testSelectAvailableAuth() {
-        String ip ="220.230.118.176";
+        String ip ="220.230.113.177";
         int count = slackAlarmProgramMapper.selectAvailableAuth(ip);
         System.out.println(count);
     }
 
+    @Test
+    public void selectAvailableToken() {
+        String ip = "220.230.121.105";
+        int count = slackAlarmProgramMapper.selectAvailableToken(ip);
+        System.out.println(count);
+    }
 }

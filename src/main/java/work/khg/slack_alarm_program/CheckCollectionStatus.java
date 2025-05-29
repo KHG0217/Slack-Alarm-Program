@@ -66,7 +66,7 @@ public class CheckCollectionStatus {
                 collectedCrawlSiteList = slackAlarmProgramMapper.selectCollectedCrawlsite(articleSearchDTO);
 
                 // Set을 사용하여 중복 제거
-                Set<String> set = new HashSet<>(collectedCrawlSitePreList);
+                Set<String> set = new HashSet<String>(collectedCrawlSitePreList);
                 set.addAll(collectedCrawlSiteList);
                 collectedCrawlSiteList = new ArrayList<>(set);
             }

@@ -66,4 +66,11 @@
         AND STATUS = 'T'
         AND USE_DATE &lt; SYSDATE
     </select>
+
+    <select id="selectAvailableToken" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_TWITTER_XCTXID_TOKEN
+        WHERE ip = #{ip}
+        AND STATUS = 'T'
+    </select>
 </mapper>
